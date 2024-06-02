@@ -54,48 +54,48 @@ class LengthBasedBatchSampler(torch.utils.data.BatchSampler):
 
 
 def get_dataset(
-        json_data_path:str = "./train_dataset.json",
-        split:str = "train"
+        json_data_path:str = "./train_dataset3.json",
+        split:str = "train",
+        get_prompy_only = False
         ):
     """
     split parameter can be: train, valid, test
     TODO return appropriate dataset according to split
     TODO get documents,summaries according to split
     """
+    
+
     template = """
-        <|user|>
-        title : {title}\n{doc}
-        <|end|>
-        <|assistant|>
+        system : 한국말로만 대답하고 최대한 간결하고 알기쉽게 정리해줘.
+        user : 사건의 title과 판시사항을 보고 판결 결과와 그 이유를 예측해줘
+        \n title:{title}\n판시사항:{doc}
+        assistant : 
     """
 
     # dataset_path = f"./../dataset/{split}.dataset" ## You should make this dataset as jsonl file
+    if split == "test" :
+        json_data_path = "./test_dataset.json"
     with open(json_data_path) as f:
         import json
         dataset = [json.loads(line.strip()) for line in f]
         if split == "train" :
             dataset = dataset[:int(len(dataset) * 0.9)]
-        else:
+        elif split == "valid": 
             dataset = dataset[int(len(dataset) * 0.9):]
+        
 
-        """
-        dataset = [
-            {
-                "document":~~,
-                "summary":~~,
-            },
-            {
-                "document":~~,
-                "summary":~~,
-            },
-        론
-        """
 
     # dataset_dict = [{"prompt":template.format(doc=dt['doc']),"label":dt['summary']} for dt in dataset]
+    if split == "test" :
+        dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항'])} for dt in dataset]
+        return dataset_dict
+
     dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항']), "label":dt['결론']} for dt in dataset]
+
+    if get_prompy_only :
+        return dataset_dict
     print("dataset_dict: ", dataset_dict[0])
     dataset = Dataset.from_list(dataset_dict)
-
 
 
     def tokenize_and_label(sample):
@@ -113,6 +113,7 @@ def get_dataset(
 
     text_decoder_input = dataset.map(tokenize_and_label, remove_columns=list(dataset.features))
     return text_decoder_input
+
 
 def get_dataloader(
     batch_size:int = 1, 
@@ -144,41 +145,3 @@ def get_dataloader(
     
 
 
-def get_test_dataset(
-        json_data_path:str = "./test_dataset.json",
-        ):
-    """
-    split parameter can be: train, valid, test
-    TODO return appropriate dataset according to split
-    TODO get documents,summaries according to split
-    """
-    template = """
-        <|user|>
-        title : {title}\n{doc}
-        <|end|>
-        <|assistant|>
-    """
-
-    # dataset_path = f"./../dataset/{split}.dataset" ## You should make this dataset as jsonl file
-    with open(json_data_path) as f:
-        import json
-        dataset = [json.loads(line.strip()) for line in f]
-
-        """
-        dataset = [
-            {
-                "document":~~,
-                "summary":~~,
-            },
-            {
-                "document":~~,
-                "summary":~~,
-            },
-        론
-        """
-
-    # dataset_dict = [{"prompt":template.format(doc=dt['doc']),"label":dt['summary']} for dt in dataset]
-    dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항'])} for dt in dataset]
-    print("dataset_dict: ", dataset_dict[0])
- 
-    return dataset_dict
