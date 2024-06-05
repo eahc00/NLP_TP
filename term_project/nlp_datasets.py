@@ -81,9 +81,6 @@ def get_dataset(
 
 
     # dataset_dict = [{"prompt":template.format(doc=dt['doc']),"label":dt['summary']} for dt in dataset]
-    if split == "test" :
-        dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항']), "label" : dt['결론']} for dt in dataset]
-        return dataset_dict
 
     dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항']), "label":dt['결론']} for dt in dataset]
 
