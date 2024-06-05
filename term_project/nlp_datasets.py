@@ -16,7 +16,7 @@ tokenizer = AutoTokenizer.from_pretrained(
     text_decoder_id,
 )
 
-tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+tokenizer.pad_token = tokenizer.eos_token
 
 
 class LengthBasedBatchSampler(torch.utils.data.BatchSampler):
@@ -56,7 +56,7 @@ class LengthBasedBatchSampler(torch.utils.data.BatchSampler):
 def get_dataset(
         json_data_path:str = "/home/eahc00/NLP/dataset/",
         split:str = "train",
-        get_prompy_only = False
+        get_prompt_only = False
         ):
     """
     split parameter can be: train, valid, test
@@ -82,12 +82,12 @@ def get_dataset(
 
     # dataset_dict = [{"prompt":template.format(doc=dt['doc']),"label":dt['summary']} for dt in dataset]
     if split == "test" :
-        dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항'])} for dt in dataset]
+        dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항']), "label" : dt['결론']} for dt in dataset]
         return dataset_dict
 
     dataset_dict = [{"prompt":template.format(title=dt['title'], doc=dt['판시사항']), "label":dt['결론']} for dt in dataset]
 
-    if get_prompy_only :
+    if get_prompt_only :
         return dataset_dict
     print("dataset_dict: ", dataset_dict[0])
     dataset = Dataset.from_list(dataset_dict)
