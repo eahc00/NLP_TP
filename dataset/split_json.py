@@ -9,8 +9,8 @@ output_file_1 = 'train_dataset_split.json'
 output_file_2 = 'valid_dataset_split.json'
 output_file_3 = 'test_dataset_split.json'
 
-# 분할 비율 (80:20 비율)
-split_ratio = 0.8
+# 분할 비율
+split_ratio = 0.9
 
 # JSON 파일을 줄별로 읽어오기
 with open(input_file, 'r') as file:
