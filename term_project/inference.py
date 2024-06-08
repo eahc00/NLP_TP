@@ -73,6 +73,6 @@ class Application:
         with torch.no_grad():
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
             outputs = self.model.generate(input_ids=inputs["input_ids"], max_new_tokens=512)
-            response = str(self.tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True))
+            response = str(self.tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)[0])
 
         return response
