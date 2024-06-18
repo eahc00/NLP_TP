@@ -25,9 +25,11 @@ async def on_message(message):
 
     # OpenAI API가 대답
     messages = f""" system : 한국말로만 대답하고 최대한 간결하고 알기쉽게 정리해줘.
-        user : 사건의 제목과 판시사항을 보고 판결 결과와 그 이유를 예측해줘 \n
+        user : 사건의 title과 판시사항을 보고 판결 결과와 그 이유를 예측해줘 \n
         {message.content} \n assistant :"""
     response = Application()(messages).format()
+    response = response.split("assistant : ")[1]
+
     # Send the response as a message
     await message.channel.send(response)
 
