@@ -221,3 +221,4 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/linux,visualstudiocode,python,jupyternotebooks
 
 models/
+term_project/.env
