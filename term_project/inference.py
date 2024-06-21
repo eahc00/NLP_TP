@@ -14,8 +14,8 @@ class Application:
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        text_decoder_id = f"MLP-KTLim/llama-3-Korean-Bllossom-8B"
-        peft_model_id = f"MLP-KTLim/llama-3-Korean-Bllossom-8B_Lora"
+        text_decoder_id = f"upstage/SOLAR-10.7B-Instruct-v1.0"
+        peft_model_id = f"upstage/SOLAR-10.7B-Instruct-v1.0_Lora"
 
         if device == "cuda" :
             bnb_config = BitsAndBytesConfig(
@@ -42,7 +42,7 @@ class Application:
 
         load_model = PeftModel.from_pretrained(base_model, peft_model_id)
         loaded_state_dict = load_file(
-            "/home/eahc00/NLP/term_project/MLP-KTLim/llama-3-Korean-Bllossom-8B_Lora/adapter_model.safetensors"
+            "/home/eahc00/NLP/term_project/upstage/SOLAR-10.7B-Instruct-v1.0_Lora/adapter_model.safetensors"
         )
         load_model.load_state_dict(loaded_state_dict, strict=False)
         tokenizer = AutoTokenizer.from_pretrained(text_decoder_id)
@@ -72,7 +72,7 @@ class Application:
 
         with torch.no_grad():
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            outputs = self.model.generate(input_ids=inputs["input_ids"], max_new_tokens=512)
+            outputs = self.model.generate(input_ids=inputs["input_ids"], max_new_tokens=448)
             response = str(self.tokenizer.batch_decode(outputs.detach().cpu().numpy(), skip_special_tokens=True)[0])
 
         return response
